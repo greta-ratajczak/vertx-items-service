@@ -1,0 +1,11 @@
+{
+  "http.port": 3000,
+  "mongodb": {
+    "connection_string": "mongodb://localhost:27017",
+    "db_name": "vertx-items-service"
+  },
+  "jwt": {
+    "secret": "yePRZyuA2GW3cseXFHRhVNqnZqmYEcWs4mK9PvTd8kj",
+    "expiration": 86400
+  }
+}

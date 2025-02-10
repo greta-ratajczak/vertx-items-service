@@ -1,17 +1,34 @@
 package org.example;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
-    public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+public class Main {
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+
+    public static void main(String[] args) {
+        Vertx vertx = Vertx.vertx();
+
+        JsonObject config = new JsonObject()
+                .put("http.port", 3000)
+                .put("mongodb", new JsonObject()
+                        .put("connection_string", "mongodb://localhost:27017")
+                        .put("db_name", "vertx-items-service"))
+                .put("jwt", new JsonObject()
+                        .put("secret", "your-256-bit-secret-key-change-this-in-production")
+                        .put("expiration", 86400));
+
+        DeploymentOptions options = new DeploymentOptions()
+                .setConfig(config);
+
+        vertx.deployVerticle(new MainVerticle(), options)
+                .onSuccess(id -> logger.info("Application started successfully"))
+                .onFailure(err -> {
+                    logger.error("Failed to start application", err);
+                    System.exit(1);
+                });
     }
 }
